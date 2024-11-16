@@ -210,13 +210,13 @@
       const timerText = document.getElementById("timerText");
 
       const countdownInterval = setInterval(function () {
-        timeLeft--;
-        timerText.textContent = timeLeft;
+        timeLeft--;  // Уменьшаем время на 1 секунду
+        timerText.textContent = timeLeft;  // Обновляем текст секундомера
         if (timeLeft <= 0) {
           clearInterval(countdownInterval);
           document.getElementById("lockMessage").textContent = "Ввід пін коду заблоковано! Спробуйте пізніше.";
         }
-      }, 1000);
+      }, 1000);  // Таймер обновляется каждую секунду
     }
   </script>
 </body>
