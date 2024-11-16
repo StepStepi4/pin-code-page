@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Проверка пин-кода</title>
   <style>
-    /* Оставляем стиль клавиатуры прежним */
     body {
       display: flex;
       justify-content: center;
@@ -69,12 +68,20 @@
     .pin-container-hidden {
       display: none;
     }
+
+    .buttons-4rows {
+      display: grid;
+      grid-template-columns: repeat(4, 80px); /* 4 ряда */
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
   <div class="pin-container" id="pinContainer">
     <input type="password" id="pinInput" maxlength="4" disabled>
-    <div class="buttons">
+    <div class="buttons-4rows">
       <button class="pin-btn" onclick="addDigit(1)">1</button>
       <button class="pin-btn" onclick="addDigit(2)">2</button>
       <button class="pin-btn" onclick="addDigit(3)">3</button>
