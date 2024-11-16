@@ -83,31 +83,27 @@
       margin-top: 10px;
     }
 
-    /* Стиль для текста внизу */
-    .warning-text-container {
-      background-color: #f8d7da;
-      border: 1px solid #f5c6cb;
-      border-radius: 5px;
-      padding: 20px;
-      color: #721c24;
-      font-size: 18px;
-      font-weight: bold;
-      display: inline-block;
-      margin-top: 20px;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    /* Стиль для секундомера */
+    .timer-container {
+      margin-bottom: 20px;
     }
 
-    .warning-text {
-      font-size: 18px;
-      color: #d9534f;
-      margin-top: 20px;
-      text-align: center;
+    .timer-text {
+      font-size: 40px;
+      color: #ff0000;
+      font-weight: bold;
     }
 
     .pin-container-hidden {
       display: none;
     }
 
+    /* Стиль для текста внизу */
+    .warning-text {
+      font-size: 18px;
+      color: #d9534f;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -130,9 +126,10 @@
   </div>
 
   <div id="contactMessage" class="pin-container-hidden">
-    <div class="warning-text-container">
-      <p>Знайти вірний пін код можна в закріпленому сповіщені регіональної групи по послугам</p>
+    <div class="timer-container">
+      <div class="timer-text" id="timerText">60</div>
     </div>
+    <p class="warning-text">Знайти вірний пін код можна в закріпленому сповіщені регіональної групи по послугам</p>
   </div>
 
   <script>
@@ -191,10 +188,10 @@
         if (attempts >= maxAttempts) {
           isLocked = true;
           const lockTime = Date.now();
-          const lockEndTime = lockTime + 40000; // 40 секунд блокування
+          const lockEndTime = lockTime + 60000; // 60 секунд блокування
           localStorage.setItem('locked', 'true');
           localStorage.setItem('lockEndTime', lockEndTime.toString());
-          showLockMessage();
+          startTimer();
         }
       }
     }
@@ -208,15 +205,13 @@
       document.getElementById("contactMessage").classList.remove("pin-container-hidden");
     }
 
-    function showLockMessage() {
-      let timeLeft = 40;
-      const lockMessage = document.getElementById("lockMessage");
-
-      lockMessage.textContent = `Вхід заблоковано на ${timeLeft} секунд.`;
+    function startTimer() {
+      let timeLeft = 60;
+      const timerText = document.getElementById("timerText");
 
       const countdownInterval = setInterval(function () {
         timeLeft--;  // Уменьшаем время на 1 секунду
-        lockMessage.textContent = `Вхід заблоковано на ${timeLeft} секунд.`;
+        timerText.textContent = timeLeft;  // Обновляем текст секундомера
         if (timeLeft <= 0) {
           clearInterval(countdownInterval);
           document.getElementById("lockMessage").textContent = "Ввід пін коду заблоковано! Спробуйте пізніше.";
