@@ -1,82 +1,209 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Проверка пароля</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            text-align: center;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px;
-        }
-        h2 {
-            margin-bottom: 20px;
-        }
-        input {
-            padding: 10px;
-            width: 80%;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .error {
-            color: red;
-            display: none;
-            margin-top: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Проверка пин-кода</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+    }
+
+    .pin-container {
+      text-align: center;
+      width: 100%;
+    }
+
+    #pinInput {
+      font-size: 24px;
+      width: 150px;
+      text-align: center;
+      margin-bottom: 20px;
+      border: none;
+      border-bottom: 2px solid #000;
+      outline: none;
+      background: none;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .pin-btn {
+      width: 70px;
+      height: 70px;
+      font-size: 24px;
+      border-radius: 50%;
+      border: none;
+      background: none;
+      color: #000;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .pin-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .pin-btn:active {
+      transform: scale(0.9);
+    }
+
+    .pin-btn:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    /* Дёргание экрана */
+    .shake {
+      animation: shake 0.3s;
+    }
+
+    @keyframes shake {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      25% {
+        transform: translateX(-10px);
+      }
+      50% {
+        transform: translateX(10px);
+      }
+      75% {
+        transform: translateX(-10px);
+      }
+    }
+
+    .lock-message {
+      font-size: 18px;
+      margin-top: 20px;
+      color: red;
+    }
+
+    .contact-message {
+      font-size: 22px;
+      color: red;
+      margin-top: 20px;
+    }
+
+    .contact-subtext {
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .pin-container-hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-
-    <div class="container">
-        <h2>Введите пин код</h2>
-        <input type="password" id="password" placeholder="Пин код" />
-        <button onclick="checkPassword()">Подтвердить</button>
-        <p id="error" class="error">Вы ввели неправильный пин код</p>
+  <div class="pin-container" id="pinContainer">
+    <input type="password" id="pinInput" maxlength="4" disabled>
+    <div class="buttons">
+      <button class="pin-btn" onclick="addDigit(1)">1</button>
+      <button class="pin-btn" onclick="addDigit(2)">2</button>
+      <button class="pin-btn" onclick="addDigit(3)">3</button>
+      <button class="pin-btn" onclick="addDigit(4)">4</button>
+      <button class="pin-btn" onclick="addDigit(5)">5</button>
+      <button class="pin-btn" onclick="addDigit(6)">6</button>
+      <button class="pin-btn" onclick="addDigit(7)">7</button>
+      <button class="pin-btn" onclick="addDigit(8)">8</button>
+      <button class="pin-btn" onclick="addDigit(9)">9</button>
+      <button class="pin-btn" onclick="removeDigit()">&#9003;</button>
+      <button class="pin-btn" onclick="addDigit(0)">0</button>
     </div>
+    <div id="lockMessage" class="lock-message" style="display: none;"></div>
+  </div>
 
-    <script>
-        function checkPassword() {
-            const password = document.getElementById('password').value;
-            const errorElement = document.getElementById('error');
-            
-            // Правильный пин код теперь 8888
-            const correctPassword = '8888';
+  <div id="contactMessage" class="pin-container-hidden">
+    <p class="contact-message">⛔️ Досить клацати що попало ⛔️</p>
+    <p class="contact-subtext">Пошукай актуальний пін код для входу в закріплених сповіщеннях регіональної групи по послугам</p>
+  </div>
 
-            if (password === correctPassword) {
-                // Перенаправление на ссылку
-                window.location.href = 'https://t.me/rz_info_bot/info_portal';
-            } else {
-                // Показываем ошибку, если пин код неверный
-                errorElement.style.display = 'block';
-            }
+  <script>
+    const correctPin = "8888"; // Новый правильный пин
+    let attempts = 0;
+    const maxAttempts = 5;
+    let isLocked = false;
+
+    if (localStorage.getItem('locked') === 'true') {
+      const lockTime = parseInt(localStorage.getItem('lockEndTime'));
+      const currentTime = Date.now();
+      if (currentTime < lockTime) {
+        isLocked = true;
+        hidePinInput();
+      } else {
+        localStorage.removeItem('locked');
+        localStorage.removeItem('lockEndTime');
+      }
+    }
+
+    function addDigit(digit) {
+      if (isLocked) return;
+
+      const input = document.getElementById("pinInput");
+      if (input.value.length < 4) {
+        input.value += digit;
+      }
+
+      if (input.value.length === 4) {
+        validatePin();
+      }
+    }
+
+    function removeDigit() {
+      if (isLocked) return;
+
+      const input = document.getElementById("pinInput");
+      input.value = input.value.slice(0, -1);
+    }
+
+    function validatePin() {
+      const input = document.getElementById("pinInput").value;
+
+      if (input === correctPin) {
+        alert("Вы успешно ввели правильный PIN!");
+        window.location.href = "https://t.me/rz_info_bot/info_portal"; // Переход по ссылке
+      } else {
+        attempts++;
+        document.getElementById("pinContainer").classList.add("shake");
+        setTimeout(() => {
+          document.getElementById("pinContainer").classList.remove("shake");
+        }, 300);
+
+        clearInput();
+
+        if (attempts >= maxAttempts) {
+          isLocked = true;
+          const lockTime = Date.now();
+          const lockEndTime = lockTime + 60000; // 60 секунд блокировки
+          localStorage.setItem('locked', 'true');
+          localStorage.setItem('lockEndTime', lockEndTime.toString());
+          hidePinInput();
         }
-    </script>
+      }
+    }
 
+    function clearInput() {
+      document.getElementById("pinInput").value = "";
+    }
+
+    function hidePinInput() {
+      document.getElementById("pinContainer").classList.add("pin-container-hidden");
+      document.getElementById("contactMessage").classList.remove("pin-container-hidden");
+    }
+  </script>
 </body>
 </html>
