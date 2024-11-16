@@ -83,43 +83,15 @@
       margin-top: 10px;
     }
 
-    /* Стиль секундомера */
+    /* Стиль для секундомера */
     .timer-container {
-      position: relative;
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      border: 10px solid #f1f1f1;
-      background: #e7e7e7;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
       margin-bottom: 20px;
-    }
-
-    .timer {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 10px solid #ff0000;
-      transform-origin: center center;
-      animation: countdown 60s linear forwards;
     }
 
     .timer-text {
       font-size: 40px;
       color: #ff0000;
-    }
-
-    @keyframes countdown {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(-360deg); /* Вращение против часовой стрелки */
-      }
+      font-weight: bold;
     }
 
     .pin-container-hidden {
@@ -155,10 +127,9 @@
 
   <div id="contactMessage" class="pin-container-hidden">
     <div class="timer-container">
-      <div class="timer" id="timer"></div>
       <div class="timer-text" id="timerText">60</div>
     </div>
-    <p class="warning-text">⚠️ Щоб не чекати, знайди правильний пін код в закріпленому сповіщені регіональної групи по послугах</p>
+    <p class="warning-text">Знайти вірний пін код можна в закріпленому сповіщені регіональної групи по послугам</p>
   </div>
 
   <script>
@@ -217,7 +188,7 @@
         if (attempts >= maxAttempts) {
           isLocked = true;
           const lockTime = Date.now();
-          const lockEndTime = lockTime + 60000; // 60 секунд блокировки
+          const lockEndTime = lockTime + 60000; // 60 секунд блокування
           localStorage.setItem('locked', 'true');
           localStorage.setItem('lockEndTime', lockEndTime.toString());
           startTimer();
@@ -237,14 +208,13 @@
     function startTimer() {
       let timeLeft = 60;
       const timerText = document.getElementById("timerText");
-      const timerElement = document.getElementById("timer");
 
       const countdownInterval = setInterval(function () {
         timeLeft--;
         timerText.textContent = timeLeft;
         if (timeLeft <= 0) {
           clearInterval(countdownInterval);
-          document.getElementById("lockMessage").textContent = "Пин-код разблокирован! Попробуйте снова.";
+          document.getElementById("lockMessage").textContent = "Ввід пін коду заблоковано! Спробуйте пізніше.";
         }
       }, 1000);
     }
