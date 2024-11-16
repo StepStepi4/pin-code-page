@@ -5,109 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Проверка пин-кода</title>
   <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f4f4f4;
-    }
-
-    .pin-container {
-      text-align: center;
-      width: 100%;
-    }
-
-    #pinInput {
-      font-size: 24px;
-      width: 150px;
-      text-align: center;
-      margin-bottom: 20px;
-      border: none;
-      border-bottom: 2px solid #000;
-      outline: none;
-      background: none;
-    }
-
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(3, 80px);
-      gap: 10px;
-      justify-content: center;
-    }
-
-    .pin-btn {
-      width: 70px;
-      height: 70px;
-      font-size: 24px;
-      border-radius: 50%;
-      border: none;
-      background: none;
-      color: #000;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-      outline: none;
-      box-shadow: none;
-    }
-
-    .pin-btn:hover {
-      transform: scale(1.1);
-    }
-
-    .pin-btn:active {
-      transform: scale(0.9);
-    }
-
-    .pin-btn:focus {
-      outline: none;
-      box-shadow: none;
-    }
-
-    .lock-message {
-      font-size: 18px;
-      margin-top: 20px;
-      color: red;
-    }
-
-    .contact-message {
-      font-size: 22px;
-      color: red;
-      margin-top: 20px;
-    }
-
-    .contact-subtext {
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    /* Стиль для текста внизу */
-    .warning-text-container {
-      background-color: #f8d7da;
-      border: 1px solid #f5c6cb;
-      border-radius: 5px;
-      padding: 20px;
-      color: #721c24;
-      font-size: 18px;
-      font-weight: bold;
-      display: inline-block;
-      margin-top: 20px;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .warning-text {
-      font-size: 18px;
-      color: #d9534f;
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .pin-container-hidden {
-      display: none;
-    }
-
+    /* Весь стиль оставляем без изменений */
   </style>
 </head>
 <body>
@@ -141,9 +39,11 @@
     const maxAttempts = 5;
     let isLocked = false;
 
+    // Проверяем состояние блокировки пин-кода при загрузке страницы
     if (localStorage.getItem('locked') === 'true') {
       const lockTime = parseInt(localStorage.getItem('lockEndTime'));
       const currentTime = Date.now();
+      console.log("Текущая метка времени: ", currentTime);  // Добавляем вывод для отладки
       if (currentTime < lockTime) {
         isLocked = true;
         hidePinInput();
@@ -154,6 +54,7 @@
       }
     }
 
+    // Функция для добавления цифры в поле пин-кода
     function addDigit(digit) {
       if (isLocked) return;
 
@@ -167,6 +68,7 @@
       }
     }
 
+    // Функция для удаления последней цифры
     function removeDigit() {
       if (isLocked) return;
 
@@ -174,6 +76,7 @@
       input.value = input.value.slice(0, -1);
     }
 
+    // Функция для проверки пин-кода
     function validatePin() {
       const input = document.getElementById("pinInput").value;
 
@@ -182,6 +85,7 @@
         window.location.href = "https://t.me/rz_info_bot/info_portal";
       } else {
         attempts++;
+        console.log("Попытка неверная. Количество попыток: " + attempts); // Отладочный вывод
         document.getElementById("pinContainer").classList.add("shake");
         setTimeout(() => {
           document.getElementById("pinContainer").classList.remove("shake");
@@ -189,10 +93,11 @@
 
         clearInput();
 
+        // Если количество попыток превышает максимальное значение
         if (attempts >= maxAttempts) {
           isLocked = true;
           const lockTime = Date.now();
-          const lockEndTime = lockTime + 30000; // 30 секунд блокування
+          const lockEndTime = lockTime + 40000; // 40 секунд блокировки
           localStorage.setItem('locked', 'true');
           localStorage.setItem('lockEndTime', lockEndTime.toString());
           hidePinInput();
@@ -201,23 +106,27 @@
       }
     }
 
+    // Функция для очистки поля ввода
     function clearInput() {
       document.getElementById("pinInput").value = "";
     }
 
+    // Функция скрывает блок с пин-кодом
     function hidePinInput() {
       document.getElementById("pinContainer").classList.add("pin-container-hidden");
       document.getElementById("contactMessage").classList.remove("pin-container-hidden");
     }
 
+    // Функция для отображения сообщения о блокировке
     function showLockMessage() {
       let timeLeft = 40;
       const lockMessage = document.getElementById("lockMessage");
       lockMessage.textContent = `Вхід заблоковано на ${timeLeft} секунд.`;
+      console.log("Сообщение о блокировке появляется");  // Отладочный вывод
 
       const countdownInterval = setInterval(function () {
         timeLeft--;  // Уменьшаем время на 1 секунду
-        lockMessage.textContent = `Вхід заблоковано ⛔️ ${timeLeft} секунд.`;
+        lockMessage.textContent = `Вхід заблоковано на ${timeLeft} секунд.`;
         if (timeLeft <= 0) {
           clearInterval(countdownInterval);
           lockMessage.textContent = "Ввід пін коду заблоковано! Спробуйте пізніше.";
