@@ -50,12 +50,18 @@
       cursor: pointer;
       outline: none;
       box-shadow: none;
-      transition: transform 0.2s ease; /* Плавный эффект */
+      transition: transform 0.2s ease;
+    }
+
+    /* Убираем синий квадрат при нажатии на кнопки */
+    .pin-btn:focus {
+      outline: none;
+      box-shadow: none;
     }
 
     /* Эффект увеличения кнопок при нажатии */
     .pin-btn:active {
-      transform: scale(1.2); /* Увеличение кнопки при нажатии */
+      transform: scale(1.2);
     }
 
     .lock-message {
