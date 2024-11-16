@@ -86,8 +86,8 @@
     /* Стиль секундомера */
     .timer-container {
       position: relative;
-      width: 150px;
-      height: 150px;
+      width: 200px;
+      height: 200px;
       border-radius: 50%;
       border: 10px solid #f1f1f1;
       background: #e7e7e7;
@@ -95,6 +95,7 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      margin-bottom: 20px;
     }
 
     .timer {
@@ -103,11 +104,12 @@
       height: 100%;
       border-radius: 50%;
       border: 10px solid #ff0000;
+      transform-origin: center center;
       animation: countdown 60s linear forwards;
     }
 
     .timer-text {
-      font-size: 30px;
+      font-size: 40px;
       color: #ff0000;
     }
 
@@ -122,6 +124,13 @@
 
     .pin-container-hidden {
       display: none;
+    }
+
+    /* Стиль для текста внизу */
+    .warning-text {
+      font-size: 18px;
+      color: #d9534f;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -149,6 +158,7 @@
       <div class="timer" id="timer"></div>
       <div class="timer-text" id="timerText">60</div>
     </div>
+    <p class="warning-text">⚠️ Щоб не чекати, знайди правильний пін код в закріпленому сповіщені регіональної групи по послугах</p>
   </div>
 
   <script>
@@ -193,7 +203,7 @@
       const input = document.getElementById("pinInput").value;
 
       if (input === correctPin) {
-        alert("Вы успешно ввели правильный PIN!");
+        alert("Ви успішно ввели вірний PIN 👍");
         window.location.href = "https://t.me/rz_info_bot/info_portal";
       } else {
         attempts++;
