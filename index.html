@@ -147,6 +147,7 @@
       if (currentTime < lockTime) {
         isLocked = true;
         hidePinInput();
+        showLockMessage();
       } else {
         localStorage.removeItem('locked');
         localStorage.removeItem('lockEndTime');
@@ -191,9 +192,10 @@
         if (attempts >= maxAttempts) {
           isLocked = true;
           const lockTime = Date.now();
-          const lockEndTime = lockTime + 40000; // 40 секунд блокування
+          const lockEndTime = lockTime + 30000; // 30 секунд блокування
           localStorage.setItem('locked', 'true');
           localStorage.setItem('lockEndTime', lockEndTime.toString());
+          hidePinInput();
           showLockMessage();
         }
       }
@@ -211,15 +213,14 @@
     function showLockMessage() {
       let timeLeft = 40;
       const lockMessage = document.getElementById("lockMessage");
-
       lockMessage.textContent = `Вхід заблоковано на ${timeLeft} секунд.`;
 
       const countdownInterval = setInterval(function () {
         timeLeft--;  // Уменьшаем время на 1 секунду
-        lockMessage.textContent = `Вхід заблоковано на ${timeLeft} секунд.`;
+        lockMessage.textContent = `Вхід заблоковано ⛔️ ${timeLeft} секунд.`;
         if (timeLeft <= 0) {
           clearInterval(countdownInterval);
-          document.getElementById("lockMessage").textContent = "Ввід пін коду заблоковано! Спробуйте пізніше.";
+          lockMessage.textContent = "Ввід пін коду заблоковано! Спробуйте пізніше.";
         }
       }, 1000);  // Таймер обновляется каждую секунду
     }
