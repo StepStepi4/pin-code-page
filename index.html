@@ -32,11 +32,13 @@
       background: none;
     }
 
-    .buttons {
+    /* 3 ряда для кнопок */
+    .buttons-3rows {
       display: grid;
-      grid-template-columns: repeat(3, 80px);
+      grid-template-columns: repeat(3, 80px); /* 3 ряда */
       gap: 10px;
       justify-content: center;
+      margin-top: 20px;
     }
 
     .pin-btn {
@@ -48,49 +50,26 @@
       background: none;
       color: #000;
       cursor: pointer;
-      transition: transform 0.2s ease;
       outline: none;
       box-shadow: none;
+      transition: transform 0.2s ease;
     }
 
-    .pin-btn:hover {
-      transform: scale(1.1);
-    }
-
-    .pin-btn:active {
-      transform: scale(0.9);
-    }
-
+    /* Убираем синий квадрат при фокусе */
     .pin-btn:focus {
       outline: none;
       box-shadow: none;
+    }
+
+    /* Эффект увеличения кнопок при нажатии */
+    .pin-btn:active {
+      transform: scale(1.2);
     }
 
     .lock-message {
       font-size: 18px;
       margin-top: 20px;
       color: red;
-    }
-
-    .contact-message {
-      font-size: 22px;
-      color: red;
-      margin-top: 20px;
-    }
-
-    .contact-subtext {
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    /* Стиль для секундомера */
-    .timer-container {
-      margin-bottom: 20px;
-    }
-
-    .timer-text {
-      font-size: 40px;
-      color: #ff0000;
       font-weight: bold;
     }
 
@@ -98,10 +77,10 @@
       display: none;
     }
 
-    /* Стиль для текста внизу */
-    .warning-text {
+    .warning-message {
+      color: red;
+      font-weight: bold;
       font-size: 18px;
-      color: #d9534f;
       margin-top: 20px;
     }
   </style>
@@ -109,7 +88,7 @@
 <body>
   <div class="pin-container" id="pinContainer">
     <input type="password" id="pinInput" maxlength="4" disabled>
-    <div class="buttons">
+    <div class="buttons-3rows">
       <button class="pin-btn" onclick="addDigit(1)">1</button>
       <button class="pin-btn" onclick="addDigit(2)">2</button>
       <button class="pin-btn" onclick="addDigit(3)">3</button>
@@ -123,13 +102,13 @@
       <button class="pin-btn" onclick="addDigit(0)">0</button>
     </div>
     <div id="lockMessage" class="lock-message" style="display: none;"></div>
+    <div id="warningMessage" class="warning-message" style="display: none;"></div>
   </div>
 
   <div id="contactMessage" class="pin-container-hidden">
-    <div class="timer-container">
-      <div class="timer-text" id="timerText">60</div>
+    <div class="warning-text-container">
+      <p>Знайти вірний пін код можна в закріпленому сповіщені регіональної групи по послугам</p>
     </div>
-    <p class="warning-text">Знайти вірний пін код можна в закріпленому сповіщені регіональної групи по послугам</p>
   </div>
 
   <script>
@@ -138,12 +117,14 @@
     const maxAttempts = 5;
     let isLocked = false;
 
+    // Проверка состояния блокировки пин-кода
     if (localStorage.getItem('locked') === 'true') {
       const lockTime = parseInt(localStorage.getItem('lockEndTime'));
       const currentTime = Date.now();
       if (currentTime < lockTime) {
         isLocked = true;
         hidePinInput();
+        showLockMessage("Вхід заблоковано на 30 секунд.");
       } else {
         localStorage.removeItem('locked');
         localStorage.removeItem('lockEndTime');
@@ -178,6 +159,7 @@
         window.location.href = "https://t.me/rz_info_bot/info_portal";
       } else {
         attempts++;
+        showWarningMessage("Невірний пін-код. Спробуйте ще раз.");
         document.getElementById("pinContainer").classList.add("shake");
         setTimeout(() => {
           document.getElementById("pinContainer").classList.remove("shake");
@@ -185,13 +167,15 @@
 
         clearInput();
 
+        // Если количество попыток больше или равно maxAttempts
         if (attempts >= maxAttempts) {
           isLocked = true;
           const lockTime = Date.now();
-          const lockEndTime = lockTime + 60000; // 60 секунд блокування
+          const lockEndTime = lockTime + 30000; // 30 секунд блокировки
           localStorage.setItem('locked', 'true');
           localStorage.setItem('lockEndTime', lockEndTime.toString());
-          startTimer();
+          hidePinInput();
+          showLockMessage("Вхід заблоковано на 30 секунд.");
         }
       }
     }
@@ -205,18 +189,30 @@
       document.getElementById("contactMessage").classList.remove("pin-container-hidden");
     }
 
-    function startTimer() {
-      let timeLeft = 60;
-      const timerText = document.getElementById("timerText");
+    function showLockMessage(message) {
+      const lockMessage = document.getElementById("lockMessage");
+      lockMessage.textContent = message;
+      lockMessage.style.display = "block";
 
+      let timeLeft = 30;
       const countdownInterval = setInterval(function () {
-        timeLeft--;  // Уменьшаем время на 1 секунду
-        timerText.textContent = timeLeft;  // Обновляем текст секундомера
+        timeLeft--;
+        lockMessage.textContent = `${message} Оставшееся время: ${timeLeft} секунд.`;
         if (timeLeft <= 0) {
           clearInterval(countdownInterval);
-          document.getElementById("lockMessage").textContent = "Ввід пін коду заблоковано! Спробуйте пізніше.";
+          lockMessage.textContent = "Ввід пін коду заблоковано! Спробуйте пізніше.";
         }
-      }, 1000);  // Таймер обновляется каждую секунду
+      }, 1000);
+    }
+
+    function showWarningMessage(message) {
+      const warningMessage = document.getElementById("warningMessage");
+      warningMessage.textContent = message;
+      warningMessage.style.display = "block";
+      
+      setTimeout(() => {
+        warningMessage.style.display = "none";
+      }, 3000);
     }
   </script>
 </body>
