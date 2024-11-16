@@ -5,7 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Проверка пин-кода</title>
   <style>
-    /* Стиль оставляем как был, но добавим улучшенную анимацию */
+    /* Оставляем стиль клавиатуры прежним */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+    }
+
+    .pin-container {
+      text-align: center;
+      width: 100%;
+    }
+
+    #pinInput {
+      font-size: 24px;
+      width: 150px;
+      text-align: center;
+      margin-bottom: 20px;
+      border: none;
+      border-bottom: 2px solid #000;
+      outline: none;
+      background: none;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 10px;
+      justify-content: center;
+    }
+
     .pin-btn {
       width: 70px;
       height: 70px;
@@ -15,13 +49,14 @@
       background: none;
       color: #000;
       cursor: pointer;
-      transition: transform 0.2s ease;
       outline: none;
       box-shadow: none;
+      transition: transform 0.2s ease; /* Плавный эффект */
     }
 
+    /* Эффект увеличения кнопок при нажатии */
     .pin-btn:active {
-      transform: scale(1.2); /* Увеличиваем кнопки при нажатии */
+      transform: scale(1.2); /* Увеличение кнопки при нажатии */
     }
 
     .lock-message {
