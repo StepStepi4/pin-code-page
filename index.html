@@ -5,7 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Проверка пин-кода</title>
   <style>
-    /* Весь стиль оставляем без изменений */
+    /* Стиль оставляем как был, но добавим улучшенную анимацию */
+    .pin-btn {
+      width: 70px;
+      height: 70px;
+      font-size: 24px;
+      border-radius: 50%;
+      border: none;
+      background: none;
+      color: #000;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .pin-btn:active {
+      transform: scale(1.2); /* Увеличиваем кнопки при нажатии */
+    }
+
+    .lock-message {
+      font-size: 18px;
+      margin-top: 20px;
+      color: red;
+      font-weight: bold;
+    }
+
+    .pin-container-hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -39,22 +67,20 @@
     const maxAttempts = 5;
     let isLocked = false;
 
-    // Проверяем состояние блокировки пин-кода при загрузке страницы
+    // Проверка состояния блокировки пин-кода
     if (localStorage.getItem('locked') === 'true') {
       const lockTime = parseInt(localStorage.getItem('lockEndTime'));
       const currentTime = Date.now();
-      console.log("Текущая метка времени: ", currentTime);  // Добавляем вывод для отладки
       if (currentTime < lockTime) {
         isLocked = true;
         hidePinInput();
-        showLockMessage();
+        showLockMessage("Вхід заблоковано на 30 секунд.");
       } else {
         localStorage.removeItem('locked');
         localStorage.removeItem('lockEndTime');
       }
     }
 
-    // Функция для добавления цифры в поле пин-кода
     function addDigit(digit) {
       if (isLocked) return;
 
@@ -68,7 +94,6 @@
       }
     }
 
-    // Функция для удаления последней цифры
     function removeDigit() {
       if (isLocked) return;
 
@@ -76,7 +101,6 @@
       input.value = input.value.slice(0, -1);
     }
 
-    // Функция для проверки пин-кода
     function validatePin() {
       const input = document.getElementById("pinInput").value;
 
@@ -85,7 +109,6 @@
         window.location.href = "https://t.me/rz_info_bot/info_portal";
       } else {
         attempts++;
-        console.log("Попытка неверная. Количество попыток: " + attempts); // Отладочный вывод
         document.getElementById("pinContainer").classList.add("shake");
         setTimeout(() => {
           document.getElementById("pinContainer").classList.remove("shake");
@@ -93,45 +116,42 @@
 
         clearInput();
 
-        // Если количество попыток превышает максимальное значение
+        // Если количество попыток больше или равно maxAttempts
         if (attempts >= maxAttempts) {
           isLocked = true;
           const lockTime = Date.now();
-          const lockEndTime = lockTime + 40000; // 40 секунд блокировки
+          const lockEndTime = lockTime + 30000; // 30 секунд блокировки
           localStorage.setItem('locked', 'true');
           localStorage.setItem('lockEndTime', lockEndTime.toString());
           hidePinInput();
-          showLockMessage();
+          showLockMessage("Вхід заблоковано на 30 секунд.");
         }
       }
     }
 
-    // Функция для очистки поля ввода
     function clearInput() {
       document.getElementById("pinInput").value = "";
     }
 
-    // Функция скрывает блок с пин-кодом
     function hidePinInput() {
       document.getElementById("pinContainer").classList.add("pin-container-hidden");
       document.getElementById("contactMessage").classList.remove("pin-container-hidden");
     }
 
-    // Функция для отображения сообщения о блокировке
-    function showLockMessage() {
-      let timeLeft = 40;
+    function showLockMessage(message) {
       const lockMessage = document.getElementById("lockMessage");
-      lockMessage.textContent = `Вхід заблоковано на ${timeLeft} секунд.`;
-      console.log("Сообщение о блокировке появляется");  // Отладочный вывод
+      lockMessage.textContent = message;
+      lockMessage.style.display = "block";
 
+      let timeLeft = 30;
       const countdownInterval = setInterval(function () {
-        timeLeft--;  // Уменьшаем время на 1 секунду
-        lockMessage.textContent = `Вхід заблоковано на ${timeLeft} секунд.`;
+        timeLeft--;
+        lockMessage.textContent = `${message} Оставшееся время: ${timeLeft} секунд.`;
         if (timeLeft <= 0) {
           clearInterval(countdownInterval);
           lockMessage.textContent = "Ввід пін коду заблоковано! Спробуйте пізніше.";
         }
-      }, 1000);  // Таймер обновляется каждую секунду
+      }, 1000);
     }
   </script>
 </body>
